@@ -13,6 +13,7 @@ import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.entities.Pod;
 import de.tschoooons.deck_ranking_server.entities.User;
 import de.tschoooons.deck_ranking_server.entities.UserPodRole;
+import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
 import de.tschoooons.deck_ranking_server.repositories.DeckRepository;
 import de.tschoooons.deck_ranking_server.repositories.GameRepository;
 import de.tschoooons.deck_ranking_server.repositories.PodRepository;
@@ -44,7 +45,8 @@ public class PodService {
     }
 
     public Pod getById(long id) {
-        return podRepository.findById(id).get();
+        return podRepository.findById(id)
+         .orElseThrow(() -> new EntityNotInDBException("No pod with id " + id + " found."));
     }
 
     public Pod getByIdLoadLazyFetches(long id) {

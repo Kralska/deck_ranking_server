@@ -13,7 +13,6 @@ import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.ArrayList;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
@@ -34,9 +33,10 @@ public class DeckService {
     }
 
     public Deck getById(long id)
-    throws NoSuchElementException
+    throws EntityNotInDBException
     {
-        return deckRepository.findById(id).get();
+        return deckRepository.findById(id)
+            .orElseThrow(() -> new EntityNotInDBException("No Deck with id " + id + " found."));
     }
 
     public Deck getByIdLoadLazyFetches(long id)
@@ -65,7 +65,7 @@ public class DeckService {
         Deck updatedDeck = getById(id);
 
         if(registerDeckDto.getOwnerId() != null) {
-            User owner = getUserById(registerDeckDto.getOwnerId());
+            User owner = userService.getById(registerDeckDto.getOwnerId());
             updatedDeck.setOwner(owner);
         }
         if(registerDeckDto.getName() != null) {
@@ -89,7 +89,7 @@ public class DeckService {
     {
         Deck newDeck = new Deck();
 
-        User owner = getUserById(registerDeckDto.getOwnerId());
+        User owner = userService.getById(registerDeckDto.getOwnerId());
         newDeck.setOwner(owner);
         newDeck.setName(registerDeckDto.getName());
         newDeck.setCommander(registerDeckDto.getCommander());
@@ -104,28 +104,10 @@ public class DeckService {
         deckRepository.deleteById(id);
     }
 
-    /*
-     * Throws a custom error message if no user with id {id} is found.
-     */
-    private User getUserById(long userId) 
-    throws EntityNotInDBException{
-        try {
-            return userService.getById(userId);
-        } catch (NoSuchElementException e) {
-            throw new EntityNotInDBException("No owner with id " + userId + " found.");
-        }
-    }
-
     private void setDeckRatingFromDto(Deck deck, RegisterDeckDto dto) {
         deck.getDeck_ratings().clear();
         for(Long podId : dto.getPods()) {
-            Pod pod;
-            try {
-                pod = podService.getById(podId.longValue());
-            }
-            catch(NoSuchElementException ex) {
-                throw new EntityNotInDBException("No pod with id " + podId.longValue() + " found.");
-            }
+            Pod pod = podService.getById(podId.longValue());
             DeckRating deckRating = new DeckRating(pod, deck, 1000);
             deck.getDeck_ratings().add(deckRating);
         }
@@ -138,13 +120,7 @@ public class DeckService {
             long gameId = entry.getKey().longValue();
             int position = entry.getValue().intValue();
 
-            Game game;
-            try {
-                game = gameService.getById(gameId);
-            }
-            catch(NoSuchElementException ex) {
-                throw new EntityNotInDBException("No game with id " + gameId + " found.");
-            }
+            Game game = gameService.getById(gameId);
             GamePlacement gamePlacement = new GamePlacement(game, deck, position);
             deck.getPlacements().add(gamePlacement);
         }

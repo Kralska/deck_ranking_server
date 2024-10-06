@@ -6,12 +6,12 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.ArrayList;
 import java.util.Optional;
 
 import de.tschoooons.deck_ranking_server.dtos.RegisterUserDto;
 import de.tschoooons.deck_ranking_server.entities.User;
+import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
 import de.tschoooons.deck_ranking_server.repositories.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -40,8 +40,9 @@ public class UserService {
     }
 
     public User getById(Long id) 
-    throws NoSuchElementException{
-        return userRepository.findById(id).get();
+    throws EntityNotInDBException{
+        return userRepository.findById(id)
+            .orElseThrow(() -> new EntityNotInDBException("No user with id " + id + " found."));
     }
 
     public User getByIdLoadLazyFetches(long id) {

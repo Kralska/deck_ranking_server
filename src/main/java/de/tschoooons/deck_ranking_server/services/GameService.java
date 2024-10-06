@@ -9,6 +9,7 @@ import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.entities.GamePlacement;
 import de.tschoooons.deck_ranking_server.entities.Pod;
 import de.tschoooons.deck_ranking_server.entities.PodGame;
+import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
 import de.tschoooons.deck_ranking_server.repositories.DeckRepository;
 import de.tschoooons.deck_ranking_server.repositories.GameRepository;
 import de.tschoooons.deck_ranking_server.repositories.PodRepository;
@@ -45,7 +46,8 @@ public class GameService {
     }
 
     public Game getById(long id){
-        return gameRepository.findById(id).get();
+        return gameRepository.findById(id)
+            .orElseThrow(() -> new EntityNotInDBException("No game with id " + id + " found."));
     }
 
     public Game getByIdLoadLazyFetches(long id){
