@@ -39,22 +39,19 @@ public class DeckController {
         return deck;
     }
 
-    @GetMapping(value={"","/"})
+    @GetMapping("")
     public List<Deck> allDecks() {
         List<Deck> allDecks = deckService.allDecks();
-        /*for(Deck deck : allDecks) {
-            deck = deckService.getByIdLoadLazyFetches(deck.getId());
-        }*/
         return allDecks;
     }
 
-    @PostMapping(value = {"", "/", "register"})
+    @PostMapping("")
     public Deck registerDeck(@Valid @RequestBody RegisterDeckDto registerDeckDto) {
         Deck deck = deckService.register(registerDeckDto);
         return deck;
     }
     
-    @PutMapping(value = "/{id}")
+    @PutMapping("/{id}")
     public Deck updateDeck(@PathVariable long id, @Valid @RequestBody RegisterDeckDto updatedDeck) {
         // Put in an empty map for placements instead of null to ensure removal of records
         if(updatedDeck.getPlacements() == null) {
@@ -69,13 +66,13 @@ public class DeckController {
         return deck;
     }
 
-    @PatchMapping(value = "/{id}")
+    @PatchMapping("/{id}")
     public Deck updateDeckPartial(@PathVariable long id, @RequestBody RegisterDeckDto updates) {
         Deck deck = deckService.update(id, updates);
         return deck;
     }
     
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     public void deleteDeck(@PathVariable long id) {
         deckService.delete(id);
     }
