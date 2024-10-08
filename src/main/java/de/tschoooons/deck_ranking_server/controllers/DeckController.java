@@ -38,7 +38,7 @@ public class DeckController {
 
     @GetMapping("")
     public List<Deck> allDecks() {
-        List<Deck> allDecks = deckService.allDecks();
+        List<Deck> allDecks = deckService.getAllDecks();
         return allDecks;
     }
 

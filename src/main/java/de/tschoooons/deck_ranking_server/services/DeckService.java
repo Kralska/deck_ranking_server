@@ -50,9 +50,15 @@ public class DeckService {
         return deck;
     }
 
-    public List<Deck> allDecks() {
+    public List<Deck> getAllDecks() {
         ArrayList<Deck> decks = new ArrayList<>();
         deckRepository.findAll().forEach(decks::add);
+        return decks;
+    }
+
+    public List<Deck> getAllDecksOwnedBy(long ownerId) {
+        ArrayList<Deck> decks = new ArrayList<>();
+        deckRepository.findByOwnerIdIn(List.of(ownerId)).forEach(decks::add);
         return decks;
     }
 

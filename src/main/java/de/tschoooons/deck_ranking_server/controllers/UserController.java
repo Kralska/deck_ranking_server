@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.tschoooons.deck_ranking_server.dtos.RegisterUserDto;
+import de.tschoooons.deck_ranking_server.entities.Deck;
 import de.tschoooons.deck_ranking_server.entities.User;
+import de.tschoooons.deck_ranking_server.services.DeckService;
 import de.tschoooons.deck_ranking_server.services.UserService;
 import jakarta.validation.Valid;
 
@@ -21,13 +23,19 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 
+
 @RequestMapping("api/users")
 @RestController
 public class UserController {
     private final UserService userService;
+    private final DeckService deckService;
 
-    public UserController(UserService userService) {
+    public UserController(
+        UserService userService,
+        DeckService deckService
+    ) {
         this.userService = userService;
+        this.deckService = deckService;
     }
 
     @GetMapping("/{id}")
@@ -71,5 +79,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable long id) {
         userService.delete(id);
+    }
+
+    // ===== DECKS =====
+    @GetMapping("/{id}/decks")
+    public List<Deck> getUserDecks(@PathVariable long id) {
+        return deckService.getAllDecksOwnedBy(id);
     }
 }
