@@ -48,20 +48,20 @@ public class Pod {
 
     @OneToMany( mappedBy = "pod",
                 fetch = FetchType.LAZY,
-                cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE})
+                cascade = CascadeType.ALL)
     @Column(name = "role")
     private Set<PodParticipant> podParticipants;    
 
     @OneToMany( mappedBy = "pod",
                 fetch = FetchType.LAZY,
-                cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE})
+                cascade = CascadeType.ALL)
     @Column(name = "position")
     @MapKeyJoinColumn(name = "deck_id")
     private Set<DeckRating> deckRatings;
 
     @OneToMany( mappedBy = "pod", 
                 fetch = FetchType.LAZY,
-                cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE})
+                cascade = CascadeType.ALL)
     private Set<PodGame> podGames = new HashSet<PodGame>();
 
     private static final int defaultStartingElo = 1000;

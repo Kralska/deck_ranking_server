@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,6 +20,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -35,15 +37,15 @@ public class User {
     @Column(nullable = false)
     private long id;
 
-    @NaturalId
+    @NaturalId(mutable = true)
     @Basic(optional = false)
     @NotBlank(message = "username is mandatory")
     @EqualsAndHashCode.Include
     private String username;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<PodParticipant> podRoles;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PodParticipant> podRoles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
-    private List<Deck> decks;
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Deck> decks = new ArrayList<>();
 }

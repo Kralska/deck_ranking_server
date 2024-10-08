@@ -59,27 +59,27 @@ public class DeckService {
     /*
      * Updates the deck with the id {id}.
      * 
-     * Fields of registerDeckDto that are null will not be updated.
+     * Fields of deckDto that are null are ignored (will not be updated).
      */
-    public Deck update(long id, RegisterDeckDto registerDeckDto) {
+    public Deck update(long id, RegisterDeckDto deckDto) {
         Deck updatedDeck = getById(id);
 
-        if(registerDeckDto.getOwnerId() != null) {
-            User owner = userService.getById(registerDeckDto.getOwnerId());
+        if(deckDto.getOwnerId() != null) {
+            User owner = userService.getById(deckDto.getOwnerId());
             updatedDeck.setOwner(owner);
         }
-        if(registerDeckDto.getName() != null) {
-            updatedDeck.setName(registerDeckDto.getName());
+        if(deckDto.getName() != null) {
+            updatedDeck.setName(deckDto.getName());
         }
-        if(registerDeckDto.getCommander() != null) {
-            updatedDeck.setCommander(registerDeckDto.getCommander());
+        if(deckDto.getCommander() != null) {
+            updatedDeck.setCommander(deckDto.getCommander());
         }
 
-        if(registerDeckDto.getPods() != null) {
-            setDeckRatingFromDto(updatedDeck, registerDeckDto);
+        if(deckDto.getPods() != null) {
+            setDeckRatingFromDto(updatedDeck, deckDto);
         }
-        if(registerDeckDto.getPlacements() != null) {
-            setDeckPlacementsFromDto(updatedDeck, registerDeckDto);
+        if(deckDto.getPlacements() != null) {
+            setDeckPlacementsFromDto(updatedDeck, deckDto);
         }
 
         return deckRepository.save(updatedDeck);
