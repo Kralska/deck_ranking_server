@@ -8,8 +8,8 @@ import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.entities.GamePlacement;
 import de.tschoooons.deck_ranking_server.entities.Pod;
 import de.tschoooons.deck_ranking_server.entities.PodGame;
-import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
 import de.tschoooons.deck_ranking_server.repositories.GameRepository;
+import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
 import jakarta.transaction.Transactional;
 
 import java.util.ArrayList;
@@ -128,7 +128,7 @@ public class GameService {
             PodGame podGame = new PodGame(pod, game);
             int idx = oldPodGames.indexOf(podGame);
             if(idx != -1) {
-                newPodGames.add(idx, oldPodGames.get(idx));
+                newPodGames.add(oldPodGames.get(idx));
             } else {
                 newPodGames.add(podGame);
             }

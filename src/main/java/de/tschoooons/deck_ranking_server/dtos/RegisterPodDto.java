@@ -16,9 +16,8 @@ public class RegisterPodDto {
     private Set<Long> decks;
 
     // (user_id) -> (role)
-    
-    private Map<Integer, UserPodRole> participants;
+    private Map<Long, UserPodRole> participants;
 
     // (deck_id)
-    private Set<Integer> games;
+    private Set<Long> games;
 }

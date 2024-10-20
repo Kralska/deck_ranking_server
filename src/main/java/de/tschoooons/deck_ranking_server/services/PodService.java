@@ -4,43 +4,42 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import de.tschoooons.deck_ranking_server.dtos.RegisterPodDto;
 import de.tschoooons.deck_ranking_server.entities.Deck;
+import de.tschoooons.deck_ranking_server.entities.DeckRating;
 import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.entities.Pod;
+import de.tschoooons.deck_ranking_server.entities.PodGame;
+import de.tschoooons.deck_ranking_server.entities.PodParticipant;
 import de.tschoooons.deck_ranking_server.entities.User;
 import de.tschoooons.deck_ranking_server.entities.UserPodRole;
 import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
-import de.tschoooons.deck_ranking_server.repositories.DeckRepository;
-import de.tschoooons.deck_ranking_server.repositories.GameRepository;
 import de.tschoooons.deck_ranking_server.repositories.PodRepository;
-import de.tschoooons.deck_ranking_server.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
 public class PodService {
     private final PodRepository podRepository;
-    private final DeckRepository deckRepository;
-    private final GameRepository gameRepository;
-    private final UserRepository userRepository;
+    private final DeckService deckService;
+    private final GameService gameService;
+    private final UserService userService;
     private final PodCalculationService podCalculationService;
     
 
     public PodService(
         PodRepository podRepository,
-        DeckRepository deckRepository,
-        GameRepository gameRepository,
-        UserRepository userRepository,
+        DeckService deckService,
+        GameService gameService,
+        UserService userService,
         PodCalculationService podCalculationService
     ) {
         this.podRepository = podRepository;
-        this.deckRepository = deckRepository;
-        this.gameRepository = gameRepository;
-        this.userRepository = userRepository;
+        this.deckService = deckService;
+        this.gameService = gameService;
+        this.userService = userService;
         this.podCalculationService = podCalculationService;
     }
 
@@ -67,35 +66,104 @@ public class PodService {
         Pod pod = new Pod();
         pod.setName(podDto.getName());
         
-        if(podDto.getDecks() != null) {
-            List<Deck> decks = new ArrayList<Deck>();
-            for (Long deck_id : podDto.getDecks()) {
-                Deck deck = deckRepository.findById(deck_id).get();
-                decks.add(deck);
-            }
-            pod.setDecks(decks);
-        }
-        
-        if(podDto.getGames() != null) {
-            List<Game> games = new ArrayList<Game>();
-            for(int game_id : podDto.getGames()) {
-                Game game = gameRepository.findById((long) game_id).get();
-                games.add(game);
-            }
-            pod.setGames(games);
-        }
-        
-        HashMap<User, UserPodRole> users = new HashMap<User, UserPodRole>();
-        for (Map.Entry<Integer, UserPodRole> entry : podDto.getParticipants().entrySet()) {
-            User user = userRepository.findById((long) entry.getKey()).get();
-            users.put(user, entry.getValue());
-        }
-        pod.setUsers(users);
+        setDecksFromDto(pod, podDto);
+        setGamesFromDto(pod, podDto);
+        setUsersFromDto(pod, podDto);
 
         podCalculationService.CalculateRatings(pod, 1000);
-
         pod = podRepository.save(pod);
 
         return pod;
+    }
+
+    /*
+     * Updates the pod with id {id}.
+     * 
+     * Fields of dto that are null are ignored and will not be updated.
+     */
+    public Pod update(long id, RegisterPodDto dto) {
+        Pod pod = getById(id);
+        if(dto.getName() != null) {
+            pod.setName(dto.getName());
+        }
+        if(dto.getDecks() != null) {
+            setDecksFromDto(pod, dto);
+        }
+        if(dto.getGames() != null) {
+            setGamesFromDto(pod, dto);
+        }
+        if(dto.getParticipants() != null) {
+            setUsersFromDto(pod, dto);
+        }
+
+        return podRepository.save(pod);
+    }
+
+    private void setDecksFromDto(Pod pod, RegisterPodDto dto) {
+        if(dto.getDecks() == null) {
+            pod.getDeckRatings().clear();
+            return;
+        }
+        
+        List<DeckRating> oldDeckRatings = pod.getDeckRatings();
+        List<DeckRating> newDeckRatings = new ArrayList<>();
+
+        for(long deckId : dto.getDecks()) {
+            Deck deck = deckService.getById(deckId);
+            DeckRating deckRating = new DeckRating(pod, deck);
+            int idx = oldDeckRatings.indexOf(deckRating);
+            if(idx != -1) {
+                newDeckRatings.add(oldDeckRatings.get(idx));
+            } else {
+                newDeckRatings.add(deckRating);
+            }
+        }
+        pod.getDeckRatings().clear();
+        pod.getDeckRatings().addAll(newDeckRatings);
+    }
+
+    private void setGamesFromDto(Pod pod, RegisterPodDto dto) {
+        if(dto.getGames() == null) {
+            pod.getPodGames().clear();
+            return;
+        }
+
+        List<PodGame> oldPodGames = pod.getPodGames();
+        List<PodGame> newPodGames = new ArrayList<>();
+
+        for(long gameId : dto.getGames()) {
+            Game game = gameService.getById(gameId);
+            PodGame podGame = new PodGame(pod, game);
+            int idx = oldPodGames.indexOf(podGame);
+            if(idx != -1) {
+                newPodGames.add(oldPodGames.get(idx));
+            } else {
+                newPodGames.add(podGame);
+            }
+        }
+        pod.getPodGames().clear();
+        pod.getPodGames().addAll(newPodGames);
+    }
+
+    private void setUsersFromDto(Pod pod, RegisterPodDto dto) {
+        if(dto.getParticipants() == null){
+            pod.getPodParticipants().clear();
+            return;
+        }
+
+        List<PodParticipant> oldParticipants = pod.getPodParticipants();
+        List<PodParticipant> newParticipants = new ArrayList<>();
+        for(Map.Entry<Long, UserPodRole> entry : dto.getParticipants().entrySet()) {
+            User user = userService.getById(entry.getKey());
+            PodParticipant podParticipant = new PodParticipant(pod, user, entry.getValue());
+            int idx = oldParticipants.indexOf(podParticipant);
+            if (idx != -1) {
+                newParticipants.add(oldParticipants.get(idx));
+            } else {
+                newParticipants.add(podParticipant);
+            }
+        }
+        pod.getPodParticipants().clear();
+        pod.getPodParticipants().addAll(newParticipants);
     }
 }

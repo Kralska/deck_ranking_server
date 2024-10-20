@@ -2,7 +2,6 @@ package de.tschoooons.deck_ranking_server.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import de.tschoooons.deck_ranking_server.entities.Deck;
-import de.tschoooons.deck_ranking_server.entities.DeckRating;
 import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.entities.GamePlacement;
 import de.tschoooons.deck_ranking_server.entities.Pod;
@@ -84,7 +82,7 @@ public class TestPodCalculationService {
     @Test
     public void CalculateRatingsForPod() {
         Pod pod = new Pod();
-        pod.setDeckRatings(new HashSet<DeckRating>());
+        pod.setDeckRatings(new ArrayList<>());
         
         Deck inklingTokens = new Deck();
         inklingTokens.setName("inklingTokens");

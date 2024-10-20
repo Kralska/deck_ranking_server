@@ -1,14 +1,13 @@
 package de.tschoooons.deck_ranking_server.entities;
 
-import java.util.Set;
-
 import org.hibernate.annotations.NaturalId;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.persistence.CascadeType;
@@ -50,19 +49,19 @@ public class Pod {
                 fetch = FetchType.LAZY,
                 cascade = CascadeType.ALL)
     @Column(name = "role")
-    private Set<PodParticipant> podParticipants;    
+    private List<PodParticipant> podParticipants;    
 
     @OneToMany( mappedBy = "pod",
                 fetch = FetchType.LAZY,
                 cascade = CascadeType.ALL)
     @Column(name = "position")
     @MapKeyJoinColumn(name = "deck_id")
-    private Set<DeckRating> deckRatings;
+    private List<DeckRating> deckRatings;
 
     @OneToMany( mappedBy = "pod", 
                 fetch = FetchType.LAZY,
                 cascade = CascadeType.ALL)
-    private Set<PodGame> podGames = new HashSet<PodGame>();
+    private List<PodGame> podGames = new ArrayList<>();
 
     private static final int defaultStartingElo = 1000;
 
@@ -130,7 +129,7 @@ public class Pod {
 
     public void setDecks(Collection<Deck> decks, int rating ){
         if(deckRatings == null){
-            deckRatings = new HashSet<DeckRating>();
+            deckRatings = new ArrayList<>();
         } else {
             deckRatings.clear();
         }
@@ -163,7 +162,7 @@ public class Pod {
 
     public void setUsers(Map<User, UserPodRole> users) {
         if(podParticipants == null){
-            podParticipants = new HashSet<PodParticipant>();
+            podParticipants = new ArrayList<>();
         } else {
             podParticipants.clear();
         }

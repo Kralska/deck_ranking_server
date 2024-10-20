@@ -138,7 +138,6 @@ public class UserService {
                 newParticipations.add(oldParticipations.get(idx));
             } else {
                 newParticipations.add(podParticipant);
-
             }
         }
         user.getPodRoles().clear();
