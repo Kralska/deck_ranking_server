@@ -50,11 +50,11 @@ public class DeckController {
     
     @PutMapping("/{id}")
     public Deck updateDeck(@PathVariable long id, @Valid @RequestBody RegisterDeckDto updatedDeck) {
-        // Put in an empty map for placements instead of null to ensure removal of records
+        // Put in an empty map for placements instead of null to ensure removal
         if(updatedDeck.getPlacements() == null) {
             updatedDeck.setPlacements(new HashMap<>());
         }
-        // Put in an empty map for pods instead of null to ensure removal of records
+        // Put in an empty map for pods instead of null to ensure removal
         if(updatedDeck.getPods() == null) {
             updatedDeck.setPods(new HashSet<>());
         }
