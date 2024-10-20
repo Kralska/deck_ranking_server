@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import de.tschoooons.deck_ranking_server.dtos.RegisterPodDto;
 import de.tschoooons.deck_ranking_server.entities.Pod;
 import de.tschoooons.deck_ranking_server.services.PodService;
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,12 +42,12 @@ public class PodController {
     }
 
     @PostMapping(value= {"", "/", "register"})
-    public Pod register(@RequestBody RegisterPodDto podDto) {
+    public Pod register(@Valid @RequestBody RegisterPodDto podDto) {
         return podService.register(podDto);
     }
  
     @PutMapping("/{id}")
-    public Pod updatePod(@PathVariable long id, @RequestBody RegisterPodDto updatedPod) {
+    public Pod updatePod(@PathVariable long id, @Valid @RequestBody RegisterPodDto updatedPod) {
         // Put in an empty map for participants instead of null to ensure removal
         if(updatedPod.getParticipants() == null) {
             updatedPod.setParticipants(new HashMap<>());
