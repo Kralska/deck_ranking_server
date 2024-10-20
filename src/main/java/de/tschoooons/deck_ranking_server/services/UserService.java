@@ -16,6 +16,7 @@ import de.tschoooons.deck_ranking_server.entities.User;
 import de.tschoooons.deck_ranking_server.entities.UserPodRole;
 import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
 import de.tschoooons.deck_ranking_server.repositories.DeckRepository;
+import de.tschoooons.deck_ranking_server.repositories.PodRepository;
 import de.tschoooons.deck_ranking_server.repositories.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -27,7 +28,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final DeckRepository deckRepository;
-    private final PodService podService;
+    private final PodRepository podRepository;
     
     private static final ExampleMatcher MATCH_ANY = ExampleMatcher
         .matchingAny()
@@ -38,11 +39,11 @@ public class UserService {
     public UserService(
         UserRepository userRepository,
         DeckRepository deckRepository,
-        PodService podService
+        PodRepository podRepository
     ){
         this.userRepository = userRepository;
         this.deckRepository = deckRepository;
-        this.podService = podService;
+        this.podRepository = podRepository;
     }
 
     public List<User> allUsers() {
@@ -131,7 +132,7 @@ public class UserService {
         List<PodParticipant> oldParticipations = user.getPodRoles();
         List<PodParticipant> newParticipations = new ArrayList<>();
         for(Map.Entry<Long, UserPodRole> entry : dto.getPodRoles().entrySet()) {
-            PodParticipant podParticipant = new PodParticipant(podService.getById(entry.getKey()), user, entry.getValue());
+            PodParticipant podParticipant = new PodParticipant(podRepository.findById(entry.getKey()).get(), user, entry.getValue());
             int idx = oldParticipations.indexOf(podParticipant);
             if(idx != -1){
                 oldParticipations.get(idx).setRole(entry.getValue());

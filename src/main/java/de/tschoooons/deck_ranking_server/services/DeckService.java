@@ -1,6 +1,9 @@
 package de.tschoooons.deck_ranking_server.services;
 
 import de.tschoooons.deck_ranking_server.repositories.DeckRepository;
+import de.tschoooons.deck_ranking_server.repositories.GameRepository;
+import de.tschoooons.deck_ranking_server.repositories.PodRepository;
+import de.tschoooons.deck_ranking_server.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import de.tschoooons.deck_ranking_server.dtos.RegisterDeckDto;
 import de.tschoooons.deck_ranking_server.entities.Deck;
@@ -21,15 +24,15 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class DeckService {
     private final DeckRepository deckRepository;
-    private final UserService userService;
-    private final PodService podService;
-    private final GameService gameService;
+    private final UserRepository userRepository;
+    private final PodRepository podRepository;
+    private final GameRepository gameRepository;
 
-    public DeckService(DeckRepository deckRepository, UserService userService, PodService podService, GameService gameService) {
+    public DeckService(DeckRepository deckRepository, UserRepository userRepository, PodRepository podRepository, GameRepository gameRepository) {
         this.deckRepository = deckRepository;
-        this.userService = userService;
-        this.podService = podService;
-        this.gameService = gameService;
+        this.userRepository = userRepository;
+        this.podRepository = podRepository;
+        this.gameRepository = gameRepository;
     }
 
     public Deck getById(long id)
@@ -71,7 +74,7 @@ public class DeckService {
         Deck updatedDeck = getById(id);
 
         if(deckDto.getOwnerId() != null) {
-            User owner = userService.getById(deckDto.getOwnerId());
+            User owner = userRepository.findById(deckDto.getOwnerId()).get();
             updatedDeck.setOwner(owner);
         }
         if(deckDto.getName() != null) {
@@ -95,7 +98,7 @@ public class DeckService {
     {
         Deck newDeck = new Deck();
 
-        User owner = userService.getById(registerDeckDto.getOwnerId());
+        User owner = userRepository.findById(registerDeckDto.getOwnerId()).get();
         newDeck.setOwner(owner);
         newDeck.setName(registerDeckDto.getName());
         newDeck.setCommander(registerDeckDto.getCommander());
@@ -113,7 +116,7 @@ public class DeckService {
     private void setDeckRatingFromDto(Deck deck, RegisterDeckDto dto) {
         deck.getDeck_ratings().clear();
         for(Long podId : dto.getPods()) {
-            Pod pod = podService.getById(podId.longValue());
+            Pod pod = podRepository.findById(podId.longValue()).get();
             DeckRating deckRating = new DeckRating(pod, deck, 1000);
             deck.getDeck_ratings().add(deckRating);
         }
@@ -126,7 +129,7 @@ public class DeckService {
             long gameId = entry.getKey().longValue();
             int position = entry.getValue().intValue();
 
-            Game game = gameService.getById(gameId);
+            Game game = gameRepository.findById(gameId).get();
             GamePlacement gamePlacement = new GamePlacement(game, deck, position);
             deck.getPlacements().add(gamePlacement);
         }

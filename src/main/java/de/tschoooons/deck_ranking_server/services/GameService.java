@@ -8,7 +8,9 @@ import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.entities.GamePlacement;
 import de.tschoooons.deck_ranking_server.entities.Pod;
 import de.tschoooons.deck_ranking_server.entities.PodGame;
+import de.tschoooons.deck_ranking_server.repositories.DeckRepository;
 import de.tschoooons.deck_ranking_server.repositories.GameRepository;
+import de.tschoooons.deck_ranking_server.repositories.PodRepository;
 import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
 import jakarta.transaction.Transactional;
 
@@ -21,18 +23,18 @@ import java.util.List;
 @Transactional
 public class GameService {
     private final GameRepository gameRepository;
-    private final DeckService deckService;
-    private final PodService podService;
+    private final DeckRepository deckRepository;
+    private final PodRepository podRepository;
 
     public GameService(
         GameRepository gameRepository, 
-        DeckService deckService,
-        PodService podService,
+        DeckRepository deckRepository,
+        PodRepository podRepository,
         PodCalculationService podCalculationService
     ) {
         this.gameRepository = gameRepository;
-        this.deckService = deckService;
-        this.podService = podService;
+        this.deckRepository = deckRepository;
+        this.podRepository = podRepository;
     }
 
     public ArrayList<Game> allGames() {
@@ -66,7 +68,7 @@ public class GameService {
         HashSet<PodGame> pods = new HashSet<PodGame>();
         if (gameDto.getPods() != null) {
             for(Long pod_id : gameDto.getPods()) {
-                Pod pod = podService.getById(pod_id);
+                Pod pod = podRepository.findById(pod_id).get();
                 pods.add(new PodGame(pod, game));
             }
             game.setPodGames(new ArrayList<PodGame>(pods));
@@ -102,7 +104,7 @@ public class GameService {
         List<GamePlacement> oldPlacements = game.getPlacements();
         List<GamePlacement> newPlacements = new ArrayList<>();
         for(Map.Entry<Long, Integer> entry : dto.getPlacements().entrySet()) {
-            GamePlacement gamePlacement = new GamePlacement(game, deckService.getById(entry.getKey()), entry.getValue());
+            GamePlacement gamePlacement = new GamePlacement(game, deckRepository.findById(entry.getKey()).get(), entry.getValue());
             int idx = oldPlacements.indexOf(gamePlacement);
             if(idx != -1) {
                 oldPlacements.get(idx).setPosition(entry.getValue());
@@ -124,7 +126,7 @@ public class GameService {
         List<PodGame> oldPodGames = game.getPodGames();
         List<PodGame> newPodGames = new ArrayList<>();
         for(Long podId : dto.getPods()){
-            Pod pod = podService.getById(podId);
+            Pod pod = podRepository.findById(podId).get();
             PodGame podGame = new PodGame(pod, game);
             int idx = oldPodGames.indexOf(podGame);
             if(idx != -1) {

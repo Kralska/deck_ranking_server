@@ -16,30 +16,33 @@ import de.tschoooons.deck_ranking_server.entities.PodParticipant;
 import de.tschoooons.deck_ranking_server.entities.User;
 import de.tschoooons.deck_ranking_server.entities.UserPodRole;
 import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
+import de.tschoooons.deck_ranking_server.repositories.DeckRepository;
+import de.tschoooons.deck_ranking_server.repositories.GameRepository;
 import de.tschoooons.deck_ranking_server.repositories.PodRepository;
+import de.tschoooons.deck_ranking_server.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
 public class PodService {
     private final PodRepository podRepository;
-    private final DeckService deckService;
-    private final GameService gameService;
-    private final UserService userService;
+    private final DeckRepository deckRepository;
+    private final GameRepository gameRepository;
+    private final UserRepository userRepository;
     private final PodCalculationService podCalculationService;
     
 
     public PodService(
         PodRepository podRepository,
-        DeckService deckService,
-        GameService gameService,
-        UserService userService,
+        DeckRepository deckRepository,
+        GameRepository gameRepository,
+        UserRepository userRepository,
         PodCalculationService podCalculationService
     ) {
         this.podRepository = podRepository;
-        this.deckService = deckService;
-        this.gameService = gameService;
-        this.userService = userService;
+        this.deckRepository = deckRepository;
+        this.gameRepository = gameRepository;
+        this.userRepository = userRepository;
         this.podCalculationService = podCalculationService;
     }
 
@@ -109,7 +112,7 @@ public class PodService {
         List<DeckRating> newDeckRatings = new ArrayList<>();
 
         for(long deckId : dto.getDecks()) {
-            Deck deck = deckService.getById(deckId);
+            Deck deck = deckRepository.findById(deckId).get();
             DeckRating deckRating = new DeckRating(pod, deck);
             int idx = oldDeckRatings.indexOf(deckRating);
             if(idx != -1) {
@@ -132,7 +135,7 @@ public class PodService {
         List<PodGame> newPodGames = new ArrayList<>();
 
         for(long gameId : dto.getGames()) {
-            Game game = gameService.getById(gameId);
+            Game game = gameRepository.findById(gameId).get();
             PodGame podGame = new PodGame(pod, game);
             int idx = oldPodGames.indexOf(podGame);
             if(idx != -1) {
@@ -154,7 +157,7 @@ public class PodService {
         List<PodParticipant> oldParticipants = pod.getPodParticipants();
         List<PodParticipant> newParticipants = new ArrayList<>();
         for(Map.Entry<Long, UserPodRole> entry : dto.getParticipants().entrySet()) {
-            User user = userService.getById(entry.getKey());
+            User user = userRepository.findById(entry.getKey()).get();
             PodParticipant podParticipant = new PodParticipant(pod, user, entry.getValue());
             int idx = oldParticipants.indexOf(podParticipant);
             if (idx != -1) {
