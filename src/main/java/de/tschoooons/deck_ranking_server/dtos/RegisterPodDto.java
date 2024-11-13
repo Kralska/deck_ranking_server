@@ -26,7 +26,6 @@ public class RegisterPodDto {
 
     // (user_id) -> (role)
     @NotEmpty
-    @UniqueElements
     private Map<Long, UserPodRole> participants;
 
     // (deck_id)

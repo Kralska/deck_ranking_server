@@ -41,7 +41,7 @@ public class Pod {
     @Column(nullable = false)
     private long id;
 
-    @NaturalId
+    @NaturalId( mutable = true)
     @EqualsAndHashCode.Include
     private String name;
 
@@ -49,14 +49,14 @@ public class Pod {
                 fetch = FetchType.LAZY,
                 cascade = CascadeType.ALL)
     @Column(name = "role")
-    private List<PodParticipant> podParticipants;    
+    private List<PodParticipant> podParticipants = new ArrayList<>();    
 
     @OneToMany( mappedBy = "pod",
                 fetch = FetchType.LAZY,
                 cascade = CascadeType.ALL)
     @Column(name = "position")
     @MapKeyJoinColumn(name = "deck_id")
-    private List<DeckRating> deckRatings;
+    private List<DeckRating> deckRatings = new ArrayList<>();
 
     @OneToMany( mappedBy = "pod", 
                 fetch = FetchType.LAZY,
