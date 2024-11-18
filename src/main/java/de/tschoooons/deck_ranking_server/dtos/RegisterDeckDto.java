@@ -22,7 +22,7 @@ public class RegisterDeckDto {
 
     @NotNull
     @Min(value = 0)
-    private Long ownerId;
+    private Long owner;
 
     // GameID -> position
     private Map<Long, Integer> placements = null;
