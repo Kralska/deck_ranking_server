@@ -1,5 +1,6 @@
 package de.tschoooons.deck_ranking_server.controllers;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,9 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
-
-
+@CrossOrigin
 @RequestMapping("api/users")
 @RestController
 public class UserController {
@@ -44,6 +43,7 @@ public class UserController {
         return user;
     }
 
+    @CrossOrigin
     @GetMapping("")
     public List<User> allUsers() {
         return userService.allUsers();

@@ -73,8 +73,8 @@ public class DeckService {
     public Deck update(long id, RegisterDeckDto deckDto) {
         Deck updatedDeck = getById(id);
 
-        if(deckDto.getOwnerId() != null) {
-            User owner = userRepository.findById(deckDto.getOwnerId()).get();
+        if(deckDto.getOwner() != null) {
+            User owner = userRepository.findById(deckDto.getOwner()).get();
             updatedDeck.setOwner(owner);
         }
         if(deckDto.getName() != null) {
@@ -98,7 +98,7 @@ public class DeckService {
     {
         Deck newDeck = new Deck();
 
-        User owner = userRepository.findById(registerDeckDto.getOwnerId()).get();
+        User owner = userRepository.findById(registerDeckDto.getOwner()).get();
         newDeck.setOwner(owner);
         newDeck.setName(registerDeckDto.getName());
         newDeck.setCommander(registerDeckDto.getCommander());
@@ -115,23 +115,27 @@ public class DeckService {
 
     private void setDeckRatingFromDto(Deck deck, RegisterDeckDto dto) {
         deck.getDeck_ratings().clear();
-        for(Long podId : dto.getPods()) {
-            Pod pod = podRepository.findById(podId.longValue()).get();
-            DeckRating deckRating = new DeckRating(pod, deck, 1000);
-            deck.getDeck_ratings().add(deckRating);
+        if(dto.getPods() != null) {
+            for(Long podId : dto.getPods()) {
+                Pod pod = podRepository.findById(podId.longValue()).get();
+                DeckRating deckRating = new DeckRating(pod, deck, 1000);
+                deck.getDeck_ratings().add(deckRating);
+            }
         }
     }
 
     private void setDeckPlacementsFromDto(Deck deck, RegisterDeckDto dto) {
         deck.getPlacements().clear();
         // GameID -> position
-        for(Map.Entry<Long, Integer> entry: dto.getPlacements().entrySet()) {
-            long gameId = entry.getKey().longValue();
-            int position = entry.getValue().intValue();
-
-            Game game = gameRepository.findById(gameId).get();
-            GamePlacement gamePlacement = new GamePlacement(game, deck, position);
-            deck.getPlacements().add(gamePlacement);
+        if(dto.getPlacements() != null){
+            for(Map.Entry<Long, Integer> entry: dto.getPlacements().entrySet()) {
+                long gameId = entry.getKey().longValue();
+                int position = entry.getValue().intValue();
+    
+                Game game = gameRepository.findById(gameId).get();
+                GamePlacement gamePlacement = new GamePlacement(game, deck, position);
+                deck.getPlacements().add(gamePlacement);
+            }
         }
     }
 }
