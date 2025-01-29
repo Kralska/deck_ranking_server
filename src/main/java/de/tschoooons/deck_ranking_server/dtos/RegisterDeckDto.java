@@ -29,4 +29,6 @@ public class RegisterDeckDto {
 
     // PodId
     private Set<Long> pods = null;
+
+    private Integer rating = null;
 }

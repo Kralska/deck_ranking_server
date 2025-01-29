@@ -128,7 +128,7 @@ public class TestPodCalculationService {
         game1.addDeck(dinoTribal, 2);
         pod.addGame(game1);
 
-        podCalculationService.CalculateRatings(pod, 1000);
+        podCalculationService.CalculateRatingsForPod(pod, 1000);
 
         assertEquals(1080, pod.getRatingForDeck(chichiroEquip));
         assertEquals(980, pod.getRatingForDeck(inklingTokens));
@@ -149,7 +149,7 @@ public class TestPodCalculationService {
         game2.addDeck(gontiTheft, 4);
         pod.addGame(game2);
 
-        podCalculationService.CalculateRatings(pod, 1000);
+        podCalculationService.CalculateRatingsForPod(pod, 1000);
         assertEquals(961, pod.getRatingForDeck(gontiTheft));
         assertEquals(921, pod.getRatingForDeck(roxanneAirstrike));
         assertEquals(1021, pod.getRatingForDeck(morskaClues));
@@ -170,7 +170,7 @@ public class TestPodCalculationService {
         game3.addDeck(chichiroEquip, 2);
         pod.addGame(game3);
 
-        podCalculationService.CalculateRatings(pod, 1000);
+        podCalculationService.CalculateRatingsForPod(pod, 1000);
 
         assertEquals(961, pod.getRatingForDeck(gontiTheft));
         assertEquals(921, pod.getRatingForDeck(roxanneAirstrike));

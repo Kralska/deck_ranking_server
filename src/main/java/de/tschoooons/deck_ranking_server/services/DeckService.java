@@ -85,7 +85,7 @@ public class DeckService {
         }
 
         if(deckDto.getPods() != null) {
-            setDeckRatingFromDto(updatedDeck, deckDto);
+            setDeckRatingsFromDto(updatedDeck, deckDto);
         }
         if(deckDto.getPlacements() != null) {
             setDeckPlacementsFromDto(updatedDeck, deckDto);
@@ -102,8 +102,10 @@ public class DeckService {
         newDeck.setOwner(owner);
         newDeck.setName(registerDeckDto.getName());
         newDeck.setCommander(registerDeckDto.getCommander());
+        int rating = registerDeckDto.getRating() == null ? 1000 : registerDeckDto.getRating();
+        newDeck.setRating(rating);
 
-        setDeckRatingFromDto(newDeck, registerDeckDto);
+        setDeckRatingsFromDto(newDeck, registerDeckDto);
         setDeckPlacementsFromDto(newDeck, registerDeckDto);
 
         return deckRepository.save(newDeck);
@@ -113,7 +115,7 @@ public class DeckService {
         deckRepository.deleteById(id);
     }
 
-    private void setDeckRatingFromDto(Deck deck, RegisterDeckDto dto) {
+    private void setDeckRatingsFromDto(Deck deck, RegisterDeckDto dto) {
         deck.getDeck_ratings().clear();
         if(dto.getPods() != null) {
             for(Long podId : dto.getPods()) {

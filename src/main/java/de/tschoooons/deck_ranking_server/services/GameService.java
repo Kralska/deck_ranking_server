@@ -29,8 +29,7 @@ public class GameService {
     public GameService(
         GameRepository gameRepository, 
         DeckRepository deckRepository,
-        PodRepository podRepository,
-        PodCalculationService podCalculationService
+        PodRepository podRepository
     ) {
         this.gameRepository = gameRepository;
         this.deckRepository = deckRepository;

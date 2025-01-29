@@ -73,7 +73,7 @@ public class PodService {
         setGamesFromDto(pod, podDto);
         setUsersFromDto(pod, podDto);
 
-        podCalculationService.CalculateRatings(pod, 1000);
+        podCalculationService.CalculateRatingsForPod(pod, 1000);
         pod = podRepository.save(pod);
 
         return pod;

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +42,7 @@ public class DeckController {
     @GetMapping("")
     public List<Deck> allDecks() {
         List<Deck> allDecks = deckService.getAllDecks();
+        allDecks.sort(Comparator.comparing(Deck::getRating).reversed());
         return allDecks;
     }
 

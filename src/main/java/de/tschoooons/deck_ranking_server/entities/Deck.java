@@ -68,4 +68,7 @@ public class Deck {
     @OneToMany(mappedBy = "deck", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<DeckRating> deck_ratings = new HashSet<>();
 
+    @Basic(optional = false)
+    private Integer rating = 1000;
+
 }
