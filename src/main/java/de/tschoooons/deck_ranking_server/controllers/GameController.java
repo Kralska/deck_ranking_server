@@ -3,11 +3,14 @@ package de.tschoooons.deck_ranking_server.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.tschoooons.deck_ranking_server.dtos.GameDto;
 import de.tschoooons.deck_ranking_server.dtos.RegisterGameDto;
 import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.services.GameService;
+import de.tschoooons.deck_ranking_server.services.Mapper;
 import jakarta.validation.Valid;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,6 +26,7 @@ import java.util.HashMap;
 
 @RequestMapping("api/games")
 @RestController
+@CrossOrigin
 public class GameController {
     private GameService gameService;
 
@@ -31,37 +35,40 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
-    public Game getGame(@PathVariable long id) {
+    public GameDto getGame(@PathVariable long id) {
         Game game = gameService.getByIdLoadLazyFetches(id);
-        return game;
+        return Mapper.toDto(game);
     }
 
     @GetMapping(value = {"", "/"})
-    public List<Game> allGames() {
-        List<Game> games = gameService.allGames();
+    public List<GameDto> allGames() {
+        List<GameDto> games = gameService.allGames().stream()
+            .map(Mapper::toDto).toList();
         return games;
     }
     
     @PostMapping(value = {"", "/", "register"})
-    public Game registerGame(@RequestBody RegisterGameDto registerGameDto) {
+    public GameDto registerGame(@RequestBody RegisterGameDto registerGameDto) {
         Game game = gameService.register(registerGameDto);
-        return game;
+        return Mapper.toDto(game);
     }
 
     @PutMapping(value = "/{id}")
-    public Game updateGame(@PathVariable long id, @Valid @RequestBody RegisterGameDto gameDto) {
+    public GameDto updateGame(@PathVariable long id, @Valid @RequestBody RegisterGameDto gameDto) {
         if(gameDto.getPlacements() == null) {
             gameDto.setPlacements(new HashMap<>());
         }
         if(gameDto.getPods() == null) {
             gameDto.setPods(new ArrayList<>());
         }
-        return gameService.update(id, gameDto);
+        Game updatedGame = gameService.update(id, gameDto);
+        return Mapper.toDto(updatedGame);
     }
 
     @PatchMapping(value = "/{id}")
-    public Game updateGamePartial(@PathVariable long id, @RequestBody RegisterGameDto gameDto) {
-        return gameService.update(id, gameDto);
+    public GameDto updateGamePartial(@PathVariable long id, @RequestBody RegisterGameDto gameDto) {
+        Game updatedGame = gameService.update(id, gameDto);
+        return Mapper.toDto(updatedGame);
     }
 
     @DeleteMapping(value = "/{id}")

@@ -1,6 +1,9 @@
 package de.tschoooons.deck_ranking_server.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.EmbeddedId;
@@ -26,11 +29,15 @@ public class GamePlacement {
     @ManyToOne
     @MapsId("game_id")
     @JoinColumn(name = "game_id")
+    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     private Game game;
 
     @ManyToOne
     @MapsId("deck_id")
     @JoinColumn(name = "deck_id")
+    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     private Deck deck;
     
     @Basic(optional = false)

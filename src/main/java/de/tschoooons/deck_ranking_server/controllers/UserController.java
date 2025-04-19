@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.tschoooons.deck_ranking_server.dtos.RegisterUserDto;
+import de.tschoooons.deck_ranking_server.dtos.UserDto;
 import de.tschoooons.deck_ranking_server.entities.Deck;
 import de.tschoooons.deck_ranking_server.entities.User;
 import de.tschoooons.deck_ranking_server.services.DeckService;
+import de.tschoooons.deck_ranking_server.services.Mapper;
 import de.tschoooons.deck_ranking_server.services.UserService;
 import jakarta.validation.Valid;
 
@@ -38,32 +40,33 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getId(@PathVariable long id) {
+    public UserDto getId(@PathVariable long id) {
         User user = userService.getByIdLoadLazyFetches(id);
-        return user;
+        return Mapper.toDto(user);
     }
 
     @CrossOrigin
     @GetMapping("")
-    public List<User> allUsers() {
-        return userService.allUsers();
+    public List<UserDto> allUsers() {
+        return userService.allUsers().stream()
+            .map(Mapper::toDto).toList();
     }
     
     @PostMapping("")
-    public User registerUser(@Valid @RequestBody RegisterUserDto registerUserDto) {
+    public UserDto registerUser(@Valid @RequestBody RegisterUserDto registerUserDto) {
         User user = userService.register(registerUserDto);
 
-        return user;
+        return Mapper.toDto(user);
     }
 
     @PatchMapping("/{id}")
-    public User updateUserPartial(@PathVariable long id, @RequestBody RegisterUserDto userDto) {
+    public UserDto updateUserPartial(@PathVariable long id, @RequestBody RegisterUserDto userDto) {
         User updatedUser = userService.update(id, userDto);
-        return updatedUser;
+        return Mapper.toDto(updatedUser);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable long id, @Valid @RequestBody RegisterUserDto userDto) {
+    public UserDto updateUser(@PathVariable long id, @Valid @RequestBody RegisterUserDto userDto) {
         if(userDto.getPodRoles() == null){
             userDto.setPodRoles(new HashMap<>());
         }
@@ -72,8 +75,7 @@ public class UserController {
         }
         
         User updatedUser = userService.update(id, userDto);
-        
-        return updatedUser;
+        return Mapper.toDto(updatedUser);
     }
 
     @DeleteMapping("/{id}")

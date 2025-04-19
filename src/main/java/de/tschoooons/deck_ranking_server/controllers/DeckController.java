@@ -3,9 +3,11 @@ package de.tschoooons.deck_ranking_server.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.tschoooons.deck_ranking_server.dtos.DeckDto;
 import de.tschoooons.deck_ranking_server.dtos.RegisterDeckDto;
 import de.tschoooons.deck_ranking_server.entities.Deck;
 import de.tschoooons.deck_ranking_server.services.DeckService;
+import de.tschoooons.deck_ranking_server.services.Mapper;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,26 +36,27 @@ public class DeckController {
     }
 
     @GetMapping("/{id}")
-    public Deck getDeck(@PathVariable long id) {
+    public DeckDto getDeck(@PathVariable long id) {
         Deck deck = deckService.getByIdLoadLazyFetches(id);
-        return deck;
+        return Mapper.toDto(deck);
     }
 
     @GetMapping("")
-    public List<Deck> allDecks() {
-        List<Deck> allDecks = deckService.getAllDecks();
-        allDecks.sort(Comparator.comparing(Deck::getRating).reversed());
+    public List<DeckDto> allDecks() {
+        List<DeckDto> allDecks = deckService.getAllDecks().stream()
+            .map(Mapper::toDto).toList();
+        allDecks.sort(Comparator.comparing(DeckDto::getRating).reversed());
         return allDecks;
     }
 
     @PostMapping("")
-    public Deck registerDeck(@Valid @RequestBody RegisterDeckDto registerDeckDto) {
+    public DeckDto registerDeck(@Valid @RequestBody RegisterDeckDto registerDeckDto) {
         Deck deck = deckService.register(registerDeckDto);
-        return deck;
+        return Mapper.toDto(deck);
     }
     
     @PutMapping("/{id}")
-    public Deck updateDeck(@PathVariable long id, @Valid @RequestBody RegisterDeckDto updatedDeck) {
+    public DeckDto updateDeck(@PathVariable long id, @Valid @RequestBody RegisterDeckDto updatedDeck) {
         // Put in an empty map for placements instead of null to ensure removal
         if(updatedDeck.getPlacements() == null) {
             updatedDeck.setPlacements(new HashMap<>());
@@ -64,13 +67,13 @@ public class DeckController {
         }
 
         Deck deck = deckService.update(id, updatedDeck);
-        return deck;
+        return Mapper.toDto(deck);
     }
 
     @PatchMapping("/{id}")
-    public Deck updateDeckPartial(@PathVariable long id, @RequestBody RegisterDeckDto updates) {
+    public DeckDto updateDeckPartial(@PathVariable long id, @RequestBody RegisterDeckDto updates) {
         Deck deck = deckService.update(id, updates);
-        return deck;
+        return Mapper.toDto(deck);
     }
     
     @DeleteMapping("/{id}")

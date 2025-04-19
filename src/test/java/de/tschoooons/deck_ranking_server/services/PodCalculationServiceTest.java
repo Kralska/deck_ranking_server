@@ -7,19 +7,30 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.tschoooons.deck_ranking_server.entities.Deck;
 import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.entities.GamePlacement;
 import de.tschoooons.deck_ranking_server.entities.Pod;
 
-public class TestPodCalculationService {
+@ExtendWith(MockitoExtension.class)
+public class PodCalculationServiceTest {
+    
+    @Mock
+    private DeckService deckService;
+
+    @Mock
+    private GameService gameService;
 
     private EloService eloService = new EloService();
 
     @InjectMocks
-    private PodCalculationService podCalculationService = new PodCalculationService(eloService);
+    private PodCalculationService podCalculationService = 
+        new PodCalculationService(eloService, deckService, gameService);
 
     @Test
     public void DeckPerformanceInGame() {

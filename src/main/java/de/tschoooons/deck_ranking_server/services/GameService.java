@@ -39,6 +39,9 @@ public class GameService {
     public ArrayList<Game> allGames() {
         ArrayList<Game> games = new ArrayList<Game>();
         gameRepository.findAll().forEach(games::add);
+        for(Game game : games) {
+            game.getPlacements().size();
+        }
         return games;
     }
 
