@@ -21,4 +21,6 @@ public class GamePlacementId implements Serializable{
 
     private long deck_id;
 
+    private long player_id;
+
 }

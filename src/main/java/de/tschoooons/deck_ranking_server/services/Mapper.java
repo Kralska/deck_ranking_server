@@ -21,7 +21,7 @@ public class Mapper {
         return new DeckDto(
             deck.getId(),
             deck.getName(),
-            toMinDto(deck.getOwner()),
+            deck.getCommander(),
             deck.getRating()
         );
     }
@@ -32,7 +32,6 @@ public class Mapper {
 
     public static UserDto toDto(User user) {
         List<MinDeckDto> decks = new ArrayList<>();
-        user.getDecks().forEach(deck -> decks.add(toMinDto(deck)));
         
         return new UserDto(
             user.getId(),
@@ -73,6 +72,7 @@ public class Mapper {
     public static GamePlacementDto toDto(GamePlacement placement) {
         return new GamePlacementDto(
             toMinDto(placement.getDeck()), 
+            toMinDto(placement.getPlayer()),
             placement.getPosition());
     }
 }

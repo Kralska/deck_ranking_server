@@ -1,0 +1,11 @@
+services:
+  server:
+    build: .
+    ports:
+      - "8210:8080"
+  database:
+    image: "postgres:latest"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=very_safe_password
+      - POSTGRES_DB=deck-ranking

@@ -7,12 +7,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class DeckDto {
 
-    private long id;
+    private Long id;
 
     private String name;
 
-    private MinUserDto owner;
+    private String commander;
 
-    private int rating;
+    private int rating = 1000;
 
 }

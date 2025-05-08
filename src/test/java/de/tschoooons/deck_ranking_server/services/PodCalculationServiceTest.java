@@ -16,6 +16,7 @@ import de.tschoooons.deck_ranking_server.entities.Deck;
 import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.entities.GamePlacement;
 import de.tschoooons.deck_ranking_server.entities.Pod;
+import de.tschoooons.deck_ranking_server.entities.User;
 
 @ExtendWith(MockitoExtension.class)
 public class PodCalculationServiceTest {
@@ -126,17 +127,20 @@ public class PodCalculationServiceTest {
         nivMizzet.setName("nivMizzet");
         pod.addDeck(nivMizzet);
 
+        User p1 = new User();
+
+
         Game game1 = new Game();
         game1.setId(1);
         game1.setParticipants(5);
         if(game1.getPlacements() == null) {
             game1.setPlacements(new ArrayList<GamePlacement>());
         }
-        game1.addDeck(inklingTokens, 2);
-        game1.addDeck(satoruGyruda, 2);
-        game1.addDeck(chichiroEquip, 1);
-        game1.addDeck(felixFiveBoots, 2);
-        game1.addDeck(dinoTribal, 2);
+        game1.addDeck(inklingTokens, p1, 2);
+        game1.addDeck(satoruGyruda, p1, 2);
+        game1.addDeck(chichiroEquip, p1, 1);
+        game1.addDeck(felixFiveBoots, p1, 2);
+        game1.addDeck(dinoTribal, p1, 2);
         pod.addGame(game1);
 
         podCalculationService.CalculateRatingsForPod(pod, 1000);
@@ -153,11 +157,11 @@ public class PodCalculationServiceTest {
         if(game2.getPlacements() == null) {
             game2.setPlacements(new ArrayList<GamePlacement>());
         }
-        game2.addDeck(samwiseLifegain, 1);
-        game2.addDeck(roxanneAirstrike, 5);
-        game2.addDeck(chichiroEquip, 2);
-        game2.addDeck(morskaClues, 2);
-        game2.addDeck(gontiTheft, 4);
+        game2.addDeck(samwiseLifegain, p1, 1);
+        game2.addDeck(roxanneAirstrike, p1, 5);
+        game2.addDeck(chichiroEquip, p1, 2);
+        game2.addDeck(morskaClues, p1, 2);
+        game2.addDeck(gontiTheft, p1, 4);
         pod.addGame(game2);
 
         podCalculationService.CalculateRatingsForPod(pod, 1000);
@@ -176,9 +180,9 @@ public class PodCalculationServiceTest {
         }
         game3.setId(3);
         game3.setParticipants(3);
-        game3.addDeck(nivMizzet, 3);
-        game3.addDeck(satoruGyruda, 1);
-        game3.addDeck(chichiroEquip, 2);
+        game3.addDeck(nivMizzet, p1, 3);
+        game3.addDeck(satoruGyruda, p1, 1);
+        game3.addDeck(chichiroEquip, p1, 2);
         pod.addGame(game3);
 
         podCalculationService.CalculateRatingsForPod(pod, 1000);

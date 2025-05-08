@@ -105,8 +105,7 @@ public class PodCalculationService {
         int participants = game.getParticipants();
         HashMap<Float, Float> tiePenalties = new HashMap<Float, Float>();
 
-        for(int i = 0; i < placements.size(); ++i) {
-            GamePlacement placement = placements.get(i);
+        for(GamePlacement placement : placements) {
             int position = placement.getPosition();
             float performance = participants - position;
             tiePenalties.put(
@@ -116,7 +115,7 @@ public class PodCalculationService {
                  :  0.0f
             );
 
-            performances.put(placements.get(i).getDeck(), performance);
+            performances.put(placement.getDeck(), performance);
         }
         performances.replaceAll((k, v) -> v - tiePenalties.get(v));
 

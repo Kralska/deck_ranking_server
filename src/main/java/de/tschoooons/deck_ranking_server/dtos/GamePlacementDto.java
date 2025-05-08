@@ -8,6 +8,7 @@ import lombok.Data;
 public class GamePlacementDto {
     
     private MinDeckDto deck;
+    private MinUserDto player;
 
     private int position;
 

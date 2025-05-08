@@ -14,11 +14,11 @@ import de.tschoooons.deck_ranking_server.dtos.RegisterUserDto;
 import de.tschoooons.deck_ranking_server.dtos.UserDto;
 import de.tschoooons.deck_ranking_server.entities.Deck;
 import de.tschoooons.deck_ranking_server.entities.User;
-import de.tschoooons.deck_ranking_server.services.DeckService;
 import de.tschoooons.deck_ranking_server.services.Mapper;
 import de.tschoooons.deck_ranking_server.services.UserService;
 import jakarta.validation.Valid;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,14 +29,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RestController
 public class UserController {
     private final UserService userService;
-    private final DeckService deckService;
 
     public UserController(
-        UserService userService,
-        DeckService deckService
+        UserService userService
     ) {
         this.userService = userService;
-        this.deckService = deckService;
     }
 
     @GetMapping("/{id}")
@@ -48,6 +45,7 @@ public class UserController {
     @CrossOrigin
     @GetMapping("")
     public List<UserDto> allUsers() {
+        System.out.println("Did we get here?");
         return userService.allUsers().stream()
             .map(Mapper::toDto).toList();
     }
@@ -86,6 +84,6 @@ public class UserController {
     // ===== DECKS =====
     @GetMapping("/{id}/decks")
     public List<Deck> getUserDecks(@PathVariable long id) {
-        return deckService.getAllDecksOwnedBy(id);
+        return Collections.emptyList();
     }
 }

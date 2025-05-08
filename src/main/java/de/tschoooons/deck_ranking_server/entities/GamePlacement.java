@@ -12,19 +12,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
+@EqualsAndHashCode
+@Entity
 @Table(name = "game_placements")
 public class GamePlacement {
     @EmbeddedId
     @JsonIgnore
-    private GamePlacementId id = new GamePlacementId();
+    private GamePlacementId id;
     
     @ManyToOne
     @MapsId("game_id")
@@ -39,13 +41,20 @@ public class GamePlacement {
     @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
     private Deck deck;
+
+    @ManyToOne
+    @MapsId("player_id")
+    @JoinColumn(name = "player_id")
+    private User player;
     
     @Basic(optional = false)
     private int position;
 
-    public GamePlacement(Game game, Deck deck, int position) {
+    public GamePlacement(Game game, Deck deck, User player, int position) {
         this.game = game;
         this.deck = deck;
         this.position = position;
+        this.player = player;
+        id = new GamePlacementId(game.getId(), deck.getId(), player.getId());
     }
 }

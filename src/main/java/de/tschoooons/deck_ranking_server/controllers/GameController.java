@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.tschoooons.deck_ranking_server.dtos.GameDto;
-import de.tschoooons.deck_ranking_server.dtos.RegisterGameDto;
 import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.services.GameService;
 import de.tschoooons.deck_ranking_server.services.Mapper;
@@ -21,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashMap;
-
 
 @RequestMapping("api/games")
 @RestController
@@ -48,25 +45,22 @@ public class GameController {
     }
     
     @PostMapping(value = {"", "/", "register"})
-    public GameDto registerGame(@RequestBody RegisterGameDto registerGameDto) {
-        Game game = gameService.register(registerGameDto);
+    public GameDto registerGame(@RequestBody GameDto gameDto) {
+        Game game = gameService.register(gameDto);
         return Mapper.toDto(game);
     }
 
     @PutMapping(value = "/{id}")
-    public GameDto updateGame(@PathVariable long id, @Valid @RequestBody RegisterGameDto gameDto) {
+    public GameDto updateGame(@PathVariable long id, @Valid @RequestBody GameDto gameDto) {
         if(gameDto.getPlacements() == null) {
-            gameDto.setPlacements(new HashMap<>());
-        }
-        if(gameDto.getPods() == null) {
-            gameDto.setPods(new ArrayList<>());
+            gameDto.setPlacements(new ArrayList<>());
         }
         Game updatedGame = gameService.update(id, gameDto);
         return Mapper.toDto(updatedGame);
     }
 
     @PatchMapping(value = "/{id}")
-    public GameDto updateGamePartial(@PathVariable long id, @RequestBody RegisterGameDto gameDto) {
+    public GameDto updateGamePartial(@PathVariable long id, @RequestBody GameDto gameDto) {
         Game updatedGame = gameService.update(id, gameDto);
         return Mapper.toDto(updatedGame);
     }

@@ -43,9 +43,6 @@ public class User {
     @EqualsAndHashCode.Include
     private String username;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PodParticipant> podRoles = new ArrayList<>();
-
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Deck> decks = new ArrayList<>();
 }

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.4</version>
+		<version>3.4.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>de.tschoooons</groupId>
@@ -44,6 +44,13 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
+		<dependency>
+ 			<groupId>org.postgresql</groupId>
+ 			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+ 		</dependency>
+	
 
 		<dependency>
   			<groupId>com.fasterxml.jackson.datatype</groupId>

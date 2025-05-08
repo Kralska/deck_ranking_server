@@ -10,12 +10,10 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.Optional;
 import de.tschoooons.deck_ranking_server.dtos.RegisterUserDto;
-import de.tschoooons.deck_ranking_server.entities.Deck;
 import de.tschoooons.deck_ranking_server.entities.PodParticipant;
 import de.tschoooons.deck_ranking_server.entities.User;
 import de.tschoooons.deck_ranking_server.entities.UserPodRole;
 import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
-import de.tschoooons.deck_ranking_server.repositories.DeckRepository;
 import de.tschoooons.deck_ranking_server.repositories.PodRepository;
 import de.tschoooons.deck_ranking_server.repositories.UserRepository;
 
@@ -27,7 +25,6 @@ import jakarta.transaction.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final DeckRepository deckRepository;
     private final PodRepository podRepository;
     
     private static final ExampleMatcher MATCH_ANY = ExampleMatcher
@@ -38,11 +35,9 @@ public class UserService {
 
     public UserService(
         UserRepository userRepository,
-        DeckRepository deckRepository,
         PodRepository podRepository
     ){
         this.userRepository = userRepository;
-        this.deckRepository = deckRepository;
         this.podRepository = podRepository;
     }
 
@@ -61,7 +56,6 @@ public class UserService {
     public User getByIdLoadLazyFetches(long id) {
         User user = getById(id);
         Hibernate.initialize(user.getPodRoles());
-        Hibernate.initialize(user.getDecks());
         return user;
     }
 
@@ -87,7 +81,6 @@ public class UserService {
     public User register(RegisterUserDto userDto) {
         User newUser = new User();
         newUser.setUsername(userDto.getUsername());
-        setUserDecksFromDto(newUser, userDto);
         setUserRolesFromDto(newUser, userDto);
 
         return userRepository.save(newUser);
@@ -103,24 +96,10 @@ public class UserService {
         if(userDto.getUsername() != null) {
             user.setUsername(userDto.getUsername());
         }
-        if(userDto.getDecks() != null) {
-            setUserDecksFromDto(user, userDto);
-        }
         if(userDto.getPodRoles() != null) {
             setUserRolesFromDto(user, userDto);
         }
         return userRepository.save(user);
-    }
-
-    private void setUserDecksFromDto(User user, RegisterUserDto dto) {
-        user.getDecks().clear();
-        if(dto.getDecks() == null) {
-            return;
-        }
-        Iterable<Deck> decks = deckRepository.findAllById(dto.getDecks());
-        for(Deck deck : decks) {
-            user.getDecks().add(deck);
-        }
     }
 
     private void setUserRolesFromDto(User user, RegisterUserDto dto) {

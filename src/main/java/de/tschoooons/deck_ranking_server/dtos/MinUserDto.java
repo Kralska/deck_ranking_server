@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class MinUserDto {
 
-    private long id;
+    private Long id;
 
     private String username;
 

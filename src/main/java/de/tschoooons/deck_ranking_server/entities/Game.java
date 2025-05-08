@@ -1,5 +1,6 @@
 package de.tschoooons.deck_ranking_server.entities;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @Table(name = "games")
 @Entity
 @JsonIdentityInfo(
@@ -32,7 +33,6 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
-    @EqualsAndHashCode.Include
     private long id;
 
     private Date playedAt;
@@ -42,17 +42,17 @@ public class Game {
     private int participants;
 
     @OneToMany( mappedBy = "game", 
-                fetch = FetchType.LAZY,
-                cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE})
-    private List<GamePlacement> placements;
+                fetch = FetchType.EAGER,
+                cascade = CascadeType.ALL)
+    private List<GamePlacement> placements = new ArrayList<>();
 
     @OneToMany( mappedBy = "game",
                 fetch = FetchType.LAZY,
                 cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH})
-    private List<PodGame> podGames;
+    private List<PodGame> podGames = new ArrayList<>();
 
-    public void addDeck(Deck deck, int position) {
-        GamePlacement gamePlacement = new GamePlacement(this, deck, position);
+    public void addDeck(Deck deck, User player, int position) {
+        GamePlacement gamePlacement = new GamePlacement(this, deck, player, position);
         placements.add(gamePlacement);
     }
 }
