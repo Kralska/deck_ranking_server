@@ -9,7 +9,6 @@ import de.tschoooons.deck_ranking_server.services.DeckService;
 import de.tschoooons.deck_ranking_server.services.Mapper;
 import jakarta.validation.Valid;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @RequestMapping("api/decks")
 @RestController
-@CrossOrigin
 public class DeckController {
 
     private final DeckService deckService;
