@@ -1,7 +1,15 @@
+FROM maven AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+
+RUN mvn clean package -DskipTests
+
 FROM eclipse-temurin:24
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-COPY target/classes/application.properties application.properties
+WORKDIR /app
+ARG --from=build JAR_FILE=/app/target/*.jar
+COPY --from=build ${JAR_FILE} app.jar
+COPY --from=build /app/target/classes/application.properties application.properties
 ENTRYPOINT ["java","-jar","/app.jar"]
 
 EXPOSE 8080
