@@ -17,6 +17,7 @@ import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.entities.GamePlacement;
 import de.tschoooons.deck_ranking_server.entities.Pod;
 import de.tschoooons.deck_ranking_server.entities.User;
+import de.tschoooons.deck_ranking_server.repositories.GameRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class PodCalculationServiceTest {
@@ -25,13 +26,13 @@ public class PodCalculationServiceTest {
     private DeckService deckService;
 
     @Mock
-    private GameService gameService;
+    private GameRepository gameRepository;
 
     private EloService eloService = new EloService();
 
     @InjectMocks
     private PodCalculationService podCalculationService = 
-        new PodCalculationService(eloService, deckService, gameService);
+        new PodCalculationService(eloService, deckService, gameRepository);
 
     @Test
     public void DeckPerformanceInGame() {
@@ -75,7 +76,7 @@ public class PodCalculationServiceTest {
         game.setPlacements(List.of(gamePlacement1, gamePlacement2, gamePlacement3, gamePlacement4));
 
         // 1 -> 1st(3) | 2 -> 2nd(2) | 3 -> 3rd(1) | 4 -> 4th(0)
-        Map<Deck, Float> performances = podCalculationService.CalculatePerformances(game);
+        Map<Deck, Float> performances = podCalculationService.calculatePerformances(game);
         assertEquals(3.0f, performances.get(deck1));
         assertEquals(2.0f, performances.get(deck2));
         assertEquals(1.0f, performances.get(deck3));
@@ -84,7 +85,7 @@ public class PodCalculationServiceTest {
         // 1,2 -> 1st(2.5) | 3 -> 3rd(1) | 4 -> 4th(0)
         gamePlacement2.setPosition(1);
         game.setPlacements(List.of(gamePlacement1, gamePlacement2, gamePlacement3, gamePlacement4));
-        performances = podCalculationService.CalculatePerformances(game);
+        performances = podCalculationService.calculatePerformances(game);
         assertEquals(2.5f, performances.get(deck1));
         assertEquals(2.5f, performances.get(deck2));
         assertEquals(1.0f, performances.get(deck3));

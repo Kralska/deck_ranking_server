@@ -11,14 +11,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 @Table(name = "decks")
 @Entity
 public class Deck {
@@ -39,6 +34,8 @@ public class Deck {
     private String commander;
 
     @Basic(optional = false)
-    private Integer rating = 1000;
+    private Integer rating;
+
+    private Bracket bracket;
 
 }

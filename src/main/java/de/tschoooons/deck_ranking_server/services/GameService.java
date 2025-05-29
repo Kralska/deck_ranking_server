@@ -10,11 +10,11 @@ import de.tschoooons.deck_ranking_server.entities.GamePlacement;
 import de.tschoooons.deck_ranking_server.repositories.DeckRepository;
 import de.tschoooons.deck_ranking_server.repositories.GameRepository;
 import de.tschoooons.deck_ranking_server.repositories.UserRepository;
-import de.tschoooons.deck_ranking_server.errors.EntityNotInDBException;
 import jakarta.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -23,38 +23,60 @@ public class GameService {
     private final UserRepository userRepository;
     private final GameRepository gameRepository;
     private final DeckRepository deckRepository;
+    private final PodCalculationService calculationService;
 
     public GameService(
         GameRepository gameRepository, 
         DeckRepository deckRepository,
-        UserRepository userRepository
+        UserRepository userRepository,
+        PodCalculationService calculationService
     ) {
         this.gameRepository = gameRepository;
         this.deckRepository = deckRepository;
         this.userRepository = userRepository;
+        this.calculationService = calculationService;
     }
 
-    public ArrayList<Game> allGames() {
+    /**
+     * 
+     * @return
+     */
+    public List<Game> allGames() {
         ArrayList<Game> games = new ArrayList<Game>();
-        gameRepository.findAll().forEach(games::add);
-        for(Game game : games) {
-            game.getPlacements().size();
-        }
+        gameRepository.findAllWithPlacements().forEach(games::add);
         return games;
     }
 
-    public Game getById(long id){
-        return gameRepository.findById(id)
-            .orElseThrow(() -> new EntityNotInDBException("No game with id " + id + " found."));
+    public Optional<Game> getById(long id){
+        return getById(id, false);
     }
 
-    public Game getByIdLoadLazyFetches(long id){
-        Game game = getById(id);
-        Hibernate.initialize(game.getPlacements());
-        Hibernate.initialize(game.getPodGames());
+    /**
+     * Fetches a {@link Game} from the database by its {@code id}.
+     * @param id Id of the game
+     * @param loadAllInformation should additional game information be loaded? (accesses other 
+     *        database tables)
+     * @return {@link Game}, <strong>IF</strong> a game with {@code id} was found in the database
+     *    <br> {@link Optional#empty()}, <strong>OTHERWISE</strong>
+     */
+    public Optional<Game> getById(long id, boolean loadAllInformation){
+        Optional<Game> game = gameRepository.findById(id);
+        if(!loadAllInformation){
+            return game;
+        }
+        if(game.isEmpty()){
+            return game;
+        }
+        Hibernate.initialize(game.get().getPlacements());
+        Hibernate.initialize(game.get().getPodGames());
         return game;
     }
 
+    /**
+     * Adds a new game to the database
+     * @param gameDto data for the new game
+     * @return the game, as it was registered in the database
+     */
     @Transactional
     public Game register(GameDto gameDto) {
         Game game = new Game();
@@ -63,11 +85,19 @@ public class GameService {
         game.setParticipants(gameDto.getParticipants());
         setPlacementsFromDto(game, gameDto);
 
-        return gameRepository.save(game);
+        game = gameRepository.save(game);
+
+        calculationService.calculateRatings();
+
+        return game;
     }
 
     public Game update(long id, GameDto gameDto) {
-        Game game = getById(id);
+        Optional<Game> optGame = getById(id);
+        if(optGame.isEmpty()){
+            return null;
+        }
+        Game game = optGame.get();
         gameDto.setComment(gameDto.getComment());
         gameDto.setParticipants(gameDto.getParticipants());
         gameDto.setPlayedAt(gameDto.getPlayedAt());

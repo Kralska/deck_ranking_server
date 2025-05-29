@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.ArrayList;
 
 @RequestMapping("api/games")
@@ -30,9 +31,12 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
-    public GameDto getGame(@PathVariable long id) {
-        Game game = gameService.getByIdLoadLazyFetches(id);
-        return Mapper.toDto(game);
+    public Optional<GameDto> getGame(@PathVariable long id) {
+        Optional<Game> optGame = gameService.getById(id, true);
+        if(optGame.isEmpty()){
+            return Optional.empty();
+        }
+        return Optional.of(Mapper.toDto(optGame.get()));
     }
 
     @GetMapping(value = {"", "/"})

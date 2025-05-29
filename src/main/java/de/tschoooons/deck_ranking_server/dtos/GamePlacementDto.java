@@ -11,5 +11,5 @@ public class GamePlacementDto {
     private MinUserDto player;
 
     private int position;
-
+    private Integer rating;
 }

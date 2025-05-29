@@ -73,6 +73,7 @@ public class Mapper {
         return new GamePlacementDto(
             toMinDto(placement.getDeck()), 
             toMinDto(placement.getPlayer()),
-            placement.getPosition());
+            placement.getPosition(),
+            placement.getRating());
     }
 }
