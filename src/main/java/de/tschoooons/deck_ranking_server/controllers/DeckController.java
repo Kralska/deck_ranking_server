@@ -4,8 +4,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.tschoooons.deck_ranking_server.dtos.DeckDto;
+import de.tschoooons.deck_ranking_server.dtos.GameDto;
 import de.tschoooons.deck_ranking_server.entities.Deck;
+import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.services.DeckService;
+import de.tschoooons.deck_ranking_server.services.GameService;
 import de.tschoooons.deck_ranking_server.services.Mapper;
 import jakarta.validation.Valid;
 
@@ -24,9 +27,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class DeckController {
 
     private final DeckService deckService;
+    private final GameService gameService;
 
-    public DeckController(DeckService deckService) {
+    public DeckController(
+        DeckService deckService,
+        GameService gameService) {
         this.deckService = deckService;
+        this.gameService = gameService;
     }
 
     @GetMapping("/{id}")
@@ -64,5 +71,18 @@ public class DeckController {
     @DeleteMapping("/{id}")
     public void deleteDeck(@PathVariable long id) {
         deckService.delete(id);
+    }
+
+    // Games
+    /**
+     * Returns all games, that the deck with {@code id} participated in.
+     * @param id Id of the deck.
+     * @return List of games as {@link GameDto}.
+     */
+    @GetMapping("/{id}/games")
+    public List<GameDto> getGamesForDeck(@PathVariable long id) {
+        Deck deck = deckService.getById(id);
+        List<Game> games = gameService.getGamesFrom(deck);
+        return games.stream().map(Mapper::toDto).toList();
     }
 }

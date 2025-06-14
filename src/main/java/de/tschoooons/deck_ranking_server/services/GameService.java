@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import de.tschoooons.deck_ranking_server.dtos.GameDto;
 import de.tschoooons.deck_ranking_server.dtos.GamePlacementDto;
+import de.tschoooons.deck_ranking_server.entities.Deck;
 import de.tschoooons.deck_ranking_server.entities.Game;
 import de.tschoooons.deck_ranking_server.entities.GamePlacement;
 import de.tschoooons.deck_ranking_server.repositories.DeckRepository;
@@ -111,6 +112,25 @@ public class GameService {
         gameRepository.deleteById(id);
     }
 
+    /**
+     * Returns all games that {@code deck} participated in.
+     * @param deck Deck
+     * @return List of games.
+     * @see GameService#getGamesFrom(Iterable)
+     */
+    public List<Game> getGamesFrom(Deck deck){
+        List<Deck> deckList = new ArrayList<>(1);
+        deckList.add(deck);
+        return getGamesFrom(deckList);
+    }
+
+    public List<Game> getGamesFrom(Iterable<Deck> decks){
+        Iterable<Game> iter = gameRepository.findAllByDecks(decks);
+        List<Game> games = new ArrayList<>();
+        iter.forEach(games::add);
+        return games;
+    }
+
     private void setPlacementsFromDto(Game game, GameDto dto) {
         if (dto.getPlacements() == null) {
             game.getPlacements().clear();
@@ -137,4 +157,6 @@ public class GameService {
         game.getPlacements().clear();
         game.getPlacements().addAll(newPlacements);
     }
+
+    
 }
